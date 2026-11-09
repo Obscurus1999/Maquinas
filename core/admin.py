@@ -1,6 +1,10 @@
 from django.contrib import admin
 from .models import TipoFaena, Maquinaria
 
+admin.site.site_header = 'Maquinaria SpA - Panel de Control'
+admin.site.site_title = 'Maquinaria SpA Admin'
+admin.site.index_title = 'Gestión Operativa de Recursos y Servicios'
+
 @admin.register(TipoFaena)
 class TipoFaenaAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'activa')
