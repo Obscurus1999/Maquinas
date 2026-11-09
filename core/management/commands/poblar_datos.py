@@ -28,8 +28,8 @@ class Command(BaseCommand):
 
         # 3. Crear usuarios de prueba (Admin y Estándar)
         if not User.objects.filter(username="admin").exists():
-            User.objects.create_superuser("admin", "admin@maquinariapro.cl", "admin123")
+            User.objects.create_superuser("admin", "admin@maquinaria.cl", "admin123")
         if not User.objects.filter(username="operador").exists():
-            User.objects.create_user("operador", "operador@maquinariapro.cl", "user123")
+            User.objects.create_user("operador", "operador@maquinaria.cl", "user123")
 
         self.stdout.write(self.style.SUCCESS("¡Base de datos poblada exitosamente con faenas, maquinaria y usuarios!"))

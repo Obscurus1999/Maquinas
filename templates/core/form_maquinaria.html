@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ accion }} - Maquinaria SpA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5 mb-5" style="max-width: 700px;">
+        <div class="card shadow-sm p-4 bg-white">
+            <h2 class="mb-4">{{ accion }}</h2>
+            <!-- Importante: enctype='multipart/form-data' para procesar request.FILES -->
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success w-100 mt-3">Guardar Equipo</button>
+            </form>
+            <a href="{% url 'catalogo_maquinaria' %}" class="btn btn-secondary w-100 mt-2">Volver al Catálogo</a>
+        </div>
+    </div>
+</body>
+</html>

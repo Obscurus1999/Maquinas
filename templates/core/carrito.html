@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Canasta de Arriendo - Maquinaria SpA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'catalogo_maquinaria' %}">🏗️ Maquinaria SpA</a>
+            <a href="{% url 'catalogo_maquinaria' %}" class="btn btn-outline-light">Seguir Arrendando</a>
+        </div>
+    </nav>
+    <div class="container">
+        <h2 class="mb-4">Canasta de Arriendo por Días</h2>
+        {% if items %}
+        <div class="row">
+            <div class="col-md-8">
+                <table class="table table-striped bg-white shadow-sm rounded">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Equipo</th>
+                            <th>Días</th>
+                            <th>Tarifa Subtotal</th>
+                            <th>Fianza</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>{{ item.maquinaria.nombre }} <br><small class="text-muted">{{ item.maquinaria.codigo }}</small></td>
+                            <td>{{ item.dias }}</td>
+                            <td>${{ item.subtotal|floatformat:0 }} CLP</td>
+                            <td>${{ item.fianza|floatformat:0 }} CLP</td>
+                            <td>
+                                <a href="{% url 'eliminar_del_carrito' item.maquinaria.id %}" class="btn btn-danger btn-sm">Quitar</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm p-3 bg-white">
+                    <h4>Resumen de Cotización</h4>
+                    <hr>
+                    <p class="d-flex justify-content-between"><span>Subtotal Arriendo:</span> <strong>${{ subtotal_general|floatformat:0 }}</strong></p>
+                    <p class="d-flex justify-content-between"><span>IVA (19%):</span> <strong>${{ iva|floatformat:0 }}</strong></p>
+                    <p class="d-flex justify-content-between"><span>Fianza / Garantía:</span> <strong>${{ fianza_total|floatformat:0 }}</strong></p>
+                    <hr>
+                    <h5 class="d-flex justify-content-between text-primary"><span>Total General:</span> <strong>${{ total_general|floatformat:0 }}</strong></h5>
+                    <button class="btn btn-success w-100 mt-3" onclick="alert('¡Cotización generada con éxito para Maquinaria SpA!')">Confirmar Arriendo</button>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info">Tu canasta de arriendo está vacía. <a href="{% url 'catalogo_maquinaria' %}">Volver al catálogo</a></div>
+        {% endif %}
+    </div>
+</body>
+</html>

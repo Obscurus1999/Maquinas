@@ -38,11 +38,32 @@ class Maquinaria(models.Model):
     estado = models.CharField(max_length=20, choices=ESTADOS_OPERATIVOS, default='DISPONIBLE', verbose_name="Estado Operativo")
     imagen = models.ImageField(upload_to='maquinaria/', blank=True, null=True, verbose_name="Fotografía")
     vigente = models.BooleanField(default=True, verbose_name="Vigente en Catálogo")
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(f"{self.codigo}-{self.nombre}")
-        super().save(*args, **kwargs)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name_plural = "Maquinarias"
+        ordering = ['-fecha_creacion']
 
     def __str__(self):
-        return f"[{self.codigo}] {self.nombre}"
+        return f"{self.codigo} - {self.nombre}"
+
+    # Propiedad para formatear la tarifa diaria en formato chileno (ej: $45.000)
+    @property
+    def tarifa_formateada(self):
+        return f"${self.tarifa_diaria:,.0f}".replace(",", ".")
+
+    # Propiedad para formatear la fianza en formato chileno
+    @property
+    def fianza_formateada(self):
+        return f"${self.fianza:,.0f}".replace(",", ".")
+
+    # Generación automática de slugs únicos
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base_slug = slugify(self.nombre)
+            slug = base_slug
+            contador = 1
+            while Maquinaria.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{contador}"
+                contador += 1
+            self.slug = slug
