@@ -27,7 +27,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'clave-por-defecto')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
-
+# 🔍 PRINT DE DIAGNÓSTICO TEMPORAL
+print(f"VALOR DE DEBUG EN VIVO: {DEBUG} (Tipo: {type(DEBUG)})")
 ALLOWED_HOSTS = []
 
 
@@ -66,6 +67,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',
+                'core.context_processors.contador_carrito',
             ],
         },
     },
@@ -138,3 +140,8 @@ MAILERS = {
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
 }
+
+# Configuración de Autenticación - Maquinaria SpA
+LOGIN_URL = 'login'                   # A dónde manda si intentan entrar a una página protegida sin loguearse
+LOGIN_REDIRECT_URL = 'catalogo_maquinaria'  # A dónde manda al iniciar sesión exitosamente
+LOGOUT_REDIRECT_URL = 'catalogo_maquinaria' # A dónde manda al cerrar sesión

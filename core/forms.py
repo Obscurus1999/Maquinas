@@ -1,5 +1,9 @@
 from django import forms
 from .models import Maquinaria
+from django.contrib.auth.models import User
+from .models import Perfil
+from django.contrib.auth.forms import UserCreationForm
+from django.db import transaction
 
 class MaquinariaForm(forms.ModelForm):
     class Meta:
@@ -45,3 +49,32 @@ class MaquinariaForm(forms.ModelForm):
         if fianza is not None and fianza < 0:
             raise forms.ValidationError("La fianza/garantía no puede ser un valor negativo.")
         return fianza
+    
+class RegistroForm(forms.ModelForm):
+    username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control'}), label="Nombre de usuario")
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Contraseña")
+    rut = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: 12345678-9'}), label="RUT")
+    telefono = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}), label="Teléfono")
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = UserCreationForm.Meta.fields + ('username', 'first_name', 'last_name', 'email')
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+        }
+
+    @transaction.atomic
+    def save(self, commit=True):
+        # 1. Creamos el usuario base
+        user = super().save(commit=commit)
+        
+        if commit:
+            # 2. Creamos el perfil usando get_or_create para blindarnos 
+            # ante cualquier duplicado fantasma en la base de datos
+            Perfil.objects.get_or_create(
+                user=user,
+                defaults={'rut': self.cleaned_data.get('rut')}
+            )
+        return user
