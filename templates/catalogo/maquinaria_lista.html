@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Catálogo de Flota - Maquinaria SpA{% endblock %}
+
+{% block content %}
+    <h2 class="mb-4">Flota de Maquinaria y Equipos</h2>
+
+    <!-- Barra de Búsqueda y Ordenamiento -->
+    <form method="GET" action="{% url 'catalogo:lista' %}" class="row g-3 mb-4 bg-white p-3 shadow-sm rounded">
+        <div class="col-md-5">
+            <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Buscar por código, título o descripción...">
+        </div>
+        <div class="col-md-3">
+            <select name="orden" class="form-select">
+                <option value="">Ordenar por...</option>
+                <option value="precio_asc" {% if orden == 'precio_asc' %}selected{% endif %}>Tarifa: Menor a Mayor</option>
+                <option value="precio_desc" {% if orden == 'precio_desc' %}selected{% endif %}>Tarifa: Mayor a Menor</option>
+                <option value="nombre" {% if orden == 'nombre' %}selected{% endif %}>Nombre (A-Z)</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input type="hidden" name="tipo" value="{{ tipo_seleccionado }}">
+            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'catalogo:lista' %}" class="btn btn-secondary w-100">Limpiar</a>
+        </div>
+    </form>
+
+    <!-- Filtros por Tipo de Faena (Contexto) -->
+    <div class="mb-4">
+        <a href="{% url 'catalogo:lista' %}" class="btn btn-sm {% if not tipo_seleccionado %}btn-dark{% else %}btn-outline-dark{% endif %} me-2">Todas</a>
+        {% for tf in tipos_faena %}
+            <a href="{% url 'catalogo:lista' %}?tipo={{ tf.id }}&q={{ query }}&orden={{ orden }}" class="btn btn-sm {% if tipo_seleccionado == tf.id %}btn-dark{% else %}btn-outline-dark{% endif %} me-2">{{ tf.nombre }}</a>
+        {% endfor %}
+    </div>
+
+    <!-- Tarjetas Bootstrap Cards de Maquinaria -->
+    <div class="row">
+        {% for maq in page_obj %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                {% if maq.imagen %}
+                    <img src="{{ maq.imagen.url }}" class="card-img-top" style="max-height: 350px; object-fit: contain;" alt="{{ maq.nombre }}">
+                {% else %}
+                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 350px;">Sin Imagen</div>
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <span class="badge bg-secondary mb-2 align-self-start">{{ maq.tipo_faena.nombre }}</span>
+                    <h5 class="card-title">{{ maq.nombre }}</h5>
+                    <h6 class="text-muted">Cód: {{ maq.codigo }}</h6>
+                    <p class="card-text text-truncate">{{ maq.descripcion }}</p>
+                    <p class="mb-1"><strong>Capacidad:</strong> {{ maq.capacidad_carga }}</p>
+                    <p class="text-success fw-bold">${{ maq.tarifa_diaria|floatformat:0 }} CLP / día</p>
+                    <p class="text-danger small mb-3">Fianza: ${{ maq.fianza|floatformat:0 }} CLP</p>
+                    
+                    <div class="mt-auto">
+                        <div class="d-flex gap-2 mb-2">
+                            <!-- CORREGIDO: Apunta a catalogo:detalle -->
+                            <a href="{% url 'catalogo:detalle' maq.slug %}" class="btn btn-info btn-sm w-50 text-white">Ver Detalle</a>
+                            {% if user.is_staff %}
+                                <!-- CORREGIDO: Apunta a catalogo:editar -->
+                                <a href="{% url 'catalogo:editar' maq.id %}" class="btn btn-warning btn-sm w-50">Editar</a>
+                            {% endif %}
+                        </div>
+                        <!-- CORREGIDO: Apunta a reservas:agregar -->
+                        <form action="{% url 'reservas:agregar' maq.id %}" method="POST">
+                            {% csrf_token %}
+                            <div class="input-group input-group-sm mb-2">
+                                <span class="input-group-text">Días</span>
+                                <input type="number" name="dias" value="1" min="1" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm w-100">Reservar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-warning">No se encontró maquinaria disponible que coincida con tu búsqueda.</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Paginación con Paginator -->
+    {% if page_obj.has_other_pages %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}&tipo={{ tipo_seleccionado }}&orden={{ orden }}">Anterior</a></li>
+            {% endif %}
+            
+            <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}&tipo={{ tipo_seleccionado }}&orden={{ orden }}">Siguiente</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+{% endblock %}

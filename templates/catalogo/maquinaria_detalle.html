@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ maquinaria.nombre }} | Maquinaria SpA - Ficha Técnica{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Columna de Imagen / Multimedia -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100 bg-white">
+            <div class="p-3 text-center d-flex align-items-center justify-content-center bg-light" style="min-height: 450px; max-height: 600px;">
+                {% if maquinaria.imagen %}
+                    <img src="{{ maquinaria.imagen.url }}" class="img-fluid rounded shadow-sm" style="max-height: 500px; object-fit: contain;" alt="{{ maquinaria.nombre }}">
+                {% else %}
+                    <div class="text-muted d-flex flex-column align-items-center justify-content-center py-5">
+                        <i class="bi bi-tools display-3 text-secondary mb-3"></i>
+                        <h5 class="fw-semibold">Sin Imagen Técnica Disponible</h5>
+                        <p class="small text-muted mb-0">Consulte especificaciones directas con soporte.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Columna de Información y Gestión de Reserva -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-md-4 bg-white h-100">
+            <div>
+                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 mb-2 px-3 py-1 fw-semibold">
+                    {{ maquinaria.tipo_faena.nombre }}
+                </span>
+                <h2 class="fw-bold text-dark mb-1">{{ maquinaria.nombre }}</h2>
+                <h6 class="text-muted font-monospace mb-3">Cód. Equipo: {{ maquinaria.codigo }}</h6>
+                
+                <p class="text-secondary lh-base mb-4">{{ maquinaria.descripcion }}</p>
+                
+                <ul class="list-group list-group-flush mb-4 border rounded-3 overflow-hidden">
+                    <li class="list-group-item d-flex justify-content-between px-3 py-2 bg-light bg-opacity-50">
+                        <span class="text-muted">Capacidad de Carga:</span>
+                        <strong class="text-dark">{{ maquinaria.capacidad_carga }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-3 py-2 bg-light bg-opacity-50">
+                        <span class="text-muted">Estado Operativo:</span>
+                        <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1">{{ maquinaria.estado }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-3 py-2 bg-light bg-opacity-50">
+                        <span class="text-muted">Tarifa Diaria:</span>
+                        <strong class="text-success fs-6">${{ maquinaria.tarifa_diaria|floatformat:0 }} CLP</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-3 py-2 bg-light bg-opacity-50">
+                        <span class="text-muted">Fianza / Garantía Operativa:</span>
+                        <strong class="text-danger fs-6">${{ maquinaria.fianza|floatformat:0 }} CLP</strong>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Formulario de Solicitud / Reserva -->
+            <div class="card p-4 shadow-sm bg-light border-0 rounded-3 mb-4 mt-auto">
+                <form action="{% url 'agregar_al_carrito' maquinaria.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-dark small text-uppercase">Cantidad de días estimados para la faena:</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-calendar-range text-muted"></i></span>
+                            <input type="number" name="dias" value="1" min="1" class="form-control border-start-0 ps-0 shadow-none">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100 fw-bold text-dark shadow-sm hover-elevate py-2">
+                        <i class="bi bi-calendar-check me-2"></i>Solicitar Reserva de Equipo
+                    </button>
+                </form>
+            </div>
+
+            <!-- Botones de Navegación y Staff -->
+            <div class="d-flex gap-2 pt-2 border-top">
+                <a href="{% url 'catalogo:lista' %}" class="btn btn-outline-secondary flex-fill rounded-3">
+                    <i class="bi bi-arrow-left me-1"></i> Volver al Catálogo
+                </a>
+                {% if user.is_staff %}
+                    <a href="{% url 'catalogo:editar' maquinaria.id %}" class="btn btn-warning flex-fill fw-bold text-dark rounded-3">
+                        <i class="bi bi-pencil-square me-1"></i> Editar Equipo
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-elevate { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .hover-elevate:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important; }
+</style>
+{% endblock %}

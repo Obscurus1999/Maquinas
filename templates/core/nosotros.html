@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Quiénes Somos | Maquinaria SpA - Maquinaria y Equipos Industriales{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card border-0 shadow rounded-4 overflow-hidden mb-5">
+            <!-- Encabezado con Estilo Técnico Industrial -->
+            <div class="text-white p-5 text-center position-relative" style="background: linear-gradient(135deg, #1b1f24 0%, #2c3440 100%); border-bottom: 5px solid #ffc107;">
+                <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex p-3 mb-3 border border-warning border-opacity-25">
+                    <i class="bi bi-gear-wide-connected fs-1"></i>
+                </div>
+                <h1 class="fw-bold mb-2">Sobre Maquinaria SpA</h1>
+                <p class="lead text-light opacity-75 mb-0 font-monospace small">Solidez, experiencia y compromiso con el desarrollo de la infraestructura y minería en Chile.</p>
+            </div>
+
+            <div class="card-body p-4 p-md-5 bg-white">
+                <div class="row gy-4 mb-5 align-items-center">
+                    <div class="col-md-6">
+                        <h4 class="fw-bold text-dark mb-3"><i class="bi bi-building text-primary me-2"></i>Nuestra Historia</h4>
+                        <p class="text-secondary lh-base">
+                            <strong>Maquinaria SpA</strong> se consolidó como socio estratégico para empresas constructoras, contratistas y mineras, ofreciendo un parque de maquinaria pesada de alto rendimiento y marcas de prestigio internacional.
+                        </p>
+                        <p class="text-secondary lh-base">
+                            Comprendemos que cada hora de detención en faena genera costos elevados; por ello, nos enfocamos rigurosamente en garantizar disponibilidad mecánica, stock de repuestos y un servicio técnico con respuesta en terreno.
+                        </p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-4 bg-light rounded-4 border-start border-4 border-warning shadow-sm">
+                            <h4 class="fw-bold text-dark mb-3"><i class="bi bi-patch-check-fill text-warning me-2"></i>Nuestros Pilares</h4>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-3 d-flex align-items-start">
+                                    <i class="bi bi-check-circle-fill text-success fs-5 me-2 flex-shrink-0 mt-1"></i>
+                                    <div><strong>Equipos Certificados:</strong> Maquinaria moderna con homologación de seguridad y máxima eficiencia energética.</div>
+                                </li>
+                                <li class="mb-3 d-flex align-items-start">
+                                    <i class="bi bi-check-circle-fill text-success fs-5 me-2 flex-shrink-0 mt-1"></i>
+                                    <div><strong>Respaldo y Repuestos:</strong> Componentes originales y asistencia mecánica oportuna ante cualquier incidencia.</div>
+                                </li>
+                                <li class="d-flex align-items-start">
+                                    <i class="bi bi-check-circle-fill text-success fs-5 me-2 flex-shrink-0 mt-1"></i>
+                                    <div><strong>Asesoría Comercial Experta:</strong> Dimensionamiento técnico correcto para optimizar el rendimiento de tu inversión.</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-5 text-muted opacity-25">
+
+                <!-- Canales de Atención (Tarjetas Modernas) -->
+                <div class="text-center mb-4">
+                    <h5 class="fw-bold text-dark text-uppercase letter-spacing-1 small text-muted">Canales Oficiales de Atención</h5>
+                </div>
+                <div class="row g-4 text-center">
+                    <div class="col-md-4">
+                        <div class="p-4 bg-light rounded-4 border h-100 transition-hover">
+                            <div class="text-primary fs-2 mb-2"><i class="bi bi-geo-alt"></i></div>
+                            <h6 class="fw-bold text-dark">Casa Matriz</h6>
+                            <p class="small text-muted mb-0">Av. Industrial, Parque Industrial, Santiago</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-4 bg-light rounded-4 border h-100 transition-hover">
+                            <div class="text-info fs-2 mb-2"><i class="bi bi-envelope-at"></i></div>
+                            <h6 class="fw-bold text-dark">Correo Comercial</h6>
+                            <p class="small text-muted mb-0">contacto@maquinariaspa.cl</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-4 bg-light rounded-4 border h-100 transition-hover">
+                            <div class="text-success fs-2 mb-2"><i class="bi bi-whatsapp"></i></div>
+                            <h6 class="fw-bold text-dark">Ventas y Terreno</h6>
+                            <p class="small text-muted mb-0">+56 9 8765 4321</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .transition-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .transition-hover:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.08); }
+</style>
+{% endblock %}
