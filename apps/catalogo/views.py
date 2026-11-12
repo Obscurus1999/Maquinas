@@ -99,7 +99,31 @@ def eliminar_maquinaria(request, pk):
     if request.method == 'POST':
         maquinaria.vigente = False
         maquinaria.save()
-        return redirect('catalogo:lista')
+        return redirect('catalogo:gestion')
     return render(
         request, 'catalogo/maquinaria_confirmar_eliminar.html', {'maquinaria': maquinaria}
     )
+    
+@login_required
+@user_passes_test(es_staff, login_url='catalogo:lista')
+def gestion_maquinaria(request):
+    query = request.GET.get('q', '').strip()
+    
+    # Traemos todas las maquinarias (incluyendo las no vigentes si el admin necesita administrarlas, o ajusta a vigente=True si prefieres)
+    maquinarias = Maquinaria.objects.all().select_related('tipo_faena')
+
+    if query:
+        maquinarias = maquinarias.filter(
+            Q(nombre__icontains=query) |
+            Q(codigo__icontains=query) |
+            Q(descripcion__icontains=query)
+        )
+
+    paginador = Paginator(maquinarias.order_by('-fecha_creacion'), 10)
+    pagina = paginador.get_page(request.GET.get('page'))
+
+    context = {
+        'maquinarias': pagina,
+        'query': query,
+    }
+    return render(request, 'catalogo/gestion_maquinaria.html', context)    

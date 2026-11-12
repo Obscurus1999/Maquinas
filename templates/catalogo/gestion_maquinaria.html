@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Maquinaria | Catálogo{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 fw-bold mb-1"><i class="bi bi-truck text-warning me-2"></i>Gestión de Maquinaria</h1>
+        <p class="text-muted small mb-0">Panel operativo para administrar el catálogo de equipos, tarifas y estados.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'catalogo:crear' %}" class="btn btn-warning fw-semibold text-dark">
+            <i class="bi bi-plus-circle me-1"></i>Ingresar Nueva Maquinaria
+        </a>
+        <a href="/admin/catalogo/maquinaria/" target="_blank" class="btn btn-outline-dark">
+            <i class="bi bi-shield-lock me-1"></i>Panel de Control
+        </a>
+    </div>
+</div>
+
+<!-- Filtro de Búsqueda Rápida -->
+<div class="card border shadow-sm p-3 mb-4 rounded-3 bg-white">
+    <form method="get" class="row g-2">
+        <div class="col-md-10">
+            <input type="text" name="q" class="form-control" placeholder="Buscar por código, nombre o especificaciones técnicas..." value="{{ query }}">
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-dark">Filtrar</button>
+        </div>
+    </form>
+</div>
+
+<!-- Tabla de Maquinaria -->
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col" style="width: 80px;">Código</th>
+                    <th scope="col" style="width: 80px;">Foto</th>
+                    <th scope="col">Equipo / Modelo</th>
+                    <th scope="col">Tipo de Faena</th>
+                    <th scope="col">Capacidad</th>
+                    <th scope="col">Tarifa Diaria</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Vigente</th>
+                    <th scope="col" class="text-end" style="width: 150px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for maq in maquinarias %}
+                <tr>
+                    <td class="fw-bold text-muted">{{ maq.codigo }}</td>
+                    <td>
+                        {% if maq.imagen %}
+                            <img src="{{ maq.imagen.url }}" alt="{{ maq.nombre }}" class="rounded border" style="width: 48px; height: 48px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light rounded border text-center d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                <i class="bi bi-truck text-muted"></i>
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'catalogo:detalle' maq.slug %}" class="fw-bold text-dark text-decoration-none">
+                            {{ maq.nombre }}
+                        </a>
+                    </td>
+                    <td><span class="badge bg-light text-dark border">{{ maq.tipo_faena.nombre }}</span></td>
+                    <td class="text-secondary small">{{ maq.capacidad_carga }}</td>
+                    <td class="fw-bold text-dark">{{ maq.tarifa_formateada }}</td>
+                    <td>
+                        {% if maq.estado == 'DISPONIBLE' %}
+                            <span class="badge bg-success">Disponible</span>
+                        {% elif maq.estado == 'ARRENDADO' %}
+                            <span class="badge bg-warning text-dark">Arrendado</span>
+                        {% elif maq.estado == 'MANTENCION' %}
+                            <span class="badge bg-info text-dark">En Mantención</span>
+                        {% else %}
+                            <span class="badge bg-danger">Suspendido</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if maq.vigente %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">Sí</span>
+                        {% else %}
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">No</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'catalogo:editar' maq.id %}" class="btn btn-outline-primary" title="Editar Maquinaria">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'catalogo:eliminar' maq.id %}" class="btn btn-outline-danger" title="Dar de baja / Eliminar">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox display-4 d-block mb-2"></i>
+                        No hay maquinarias registradas en el inventario.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginación de la Tabla -->
+    {% if maquinarias.has_other_pages %}
+    <div class="card-footer bg-white py-3">
+        <ul class="pagination pagination-sm justify-content-center mb-0">
+            {% if maquinarias.has_previous %}
+                <li class="page-item"><a class="page-link text-dark" href="?page={{ maquinarias.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Anterior</a></li>
+            {% endif %}
+            {% for i in maquinarias.paginator.page_range %}
+                <li class="page-item {% if maquinarias.number == i %}active{% endif %}">
+                    <a class="page-link {% if maquinarias.number == i %}bg-dark border-dark{% else %}text-dark{% endif %}" href="?page={{ i }}{% if query %}&q={{ query }}{% endif %}">{{ i }}</a>
+                </li>
+            {% endfor %}
+            {% if maquinarias.has_next %}
+                <li class="page-item"><a class="page-link text-dark" href="?page={{ maquinarias.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Siguiente</a></li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

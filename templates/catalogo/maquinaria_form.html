@@ -4,61 +4,183 @@
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-8 col-xl-7">
-        <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-5">
-            <!-- Header con Estilo Industrial -->
-            <div class="text-white p-4 text-center position-relative" style="background: linear-gradient(135deg, #1b1f24 0%, #2c3440 100%); border-bottom: 5px solid #ffc107;">
-                <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex p-3 mb-2 border border-warning border-opacity-25">
-                    <i class="bi bi-tools fs-2"></i>
+    <div class="col-lg-9 col-xl-8">
+        <!-- Migas de pan (Breadcrumb) -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb small">
+                <li class="breadcrumb-item"><a href="{% url 'catalogo:lista' %}" class="text-decoration-none text-dark">Catálogo</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'catalogo:gestion' %}" class="text-decoration-none text-dark">Gestión</a></li>
+                <li class="breadcrumb-item active text-muted">{{ accion }}</li>
+            </ol>
+        </nav>
+
+        <div class="card shadow-sm border-0 rounded-4 p-4 p-md-5 bg-white">
+            <!-- Encabezado Limpio Estilo Tarjeta -->
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                <div>
+                    <h2 class="h4 fw-bold mb-1">{{ accion }}</h2>
+                    <p class="text-muted small mb-0">Completa la ficha técnica para publicar o actualizar el equipo de maquinaria.</p>
                 </div>
-                <h2 class="fw-bold mb-1">{{ accion }}</h2>
-                <p class="text-light opacity-75 small mb-0 font-monospace">Ingrese o modifique la información técnica del equipo</p>
+                <a href="{% url 'catalogo:gestion' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i>Volver al Listado
+                </a>
             </div>
 
-            <!-- Cuerpo del Formulario -->
-            <div class="card-body p-4 p-md-5 bg-white">
-                <form method="POST" enctype="multipart/form-data" novalidate>
-                    {% csrf_token %}
-                    
-                    {% if form.non_field_errors %}
-                        <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-4">
-                            {% for error in form.non_field_errors %}
-                                <div class="d-flex align-items-center">
-                                    <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
-                                    <span>{{ error }}</span>
-                                </div>
-                            {% endfor %}
+            <!-- Formulario Principal -->
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2 small rounded-3 mb-3">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- Código y Nombre / Modelo -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label for="{{ form.codigo.id_for_label }}" class="form-label fw-semibold small text-uppercase">{{ form.codigo.label }}</label>
+                        {{ form.codigo }}
+                        {% if form.codigo.errors %}
+                            <div class="text-danger small mt-1">{{ form.codigo.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <label for="{{ form.nombre.id_for_label }}" class="form-label fw-semibold small text-uppercase">{{ form.nombre.label }}</label>
+                        {{ form.nombre }}
+                        {% if form.nombre.errors %}
+                            <div class="text-danger small mt-1">{{ form.nombre.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Tipo de Faena y Capacidad de Carga -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.tipo_faena.id_for_label }}" class="form-label fw-semibold small text-uppercase">{{ form.tipo_faena.label }}</label>
+                        {{ form.tipo_faena }}
+                        {% if form.tipo_faena.errors %}
+                            <div class="text-danger small mt-1">{{ form.tipo_faena.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.capacidad_carga.id_for_label }}" class="form-label fw-semibold small text-uppercase">{{ form.capacidad_carga.label }}</label>
+                        {{ form.capacidad_carga }}
+                        {% if form.capacidad_carga.errors %}
+                            <div class="text-danger small mt-1">{{ form.capacidad_carga.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Tarifas y Fianzas -->
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.tarifa_diaria.id_for_label }}" class="form-label fw-semibold small text-uppercase">{{ form.tarifa_diaria.label }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            {{ form.tarifa_diaria }}
+                        </div>
+                        {% if form.tarifa_diaria.errors %}
+                            <div class="text-danger small mt-1">{{ form.tarifa_diaria.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.fianza.id_for_label }}" class="form-label fw-semibold small text-uppercase">{{ form.fianza.label }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            {{ form.fianza }}
+                        </div>
+                        {% if form.fianza.errors %}
+                            <div class="text-danger small mt-1">{{ form.fianza.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Estado Operativo -->
+                <div class="mb-3">
+                    <label for="{{ form.estado.id_for_label }}" class="form-label fw-semibold small text-uppercase">{{ form.estado.label }}</label>
+                    {{ form.estado }}
+                    {% if form.estado.errors %}
+                        <div class="text-danger small mt-1">{{ form.estado.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Especificaciones Técnicas (Descripción) -->
+                <div class="mb-3">
+                    <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-semibold small text-uppercase">{{ form.descripcion.label }}</label>
+                    {{ form.descripcion }}
+                    {% if form.descripcion.errors %}
+                        <div class="text-danger small mt-1">{{ form.descripcion.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Fotografía -->
+                <div class="mb-4">
+                    <label for="{{ form.imagen.id_for_label }}" class="form-label fw-semibold small text-uppercase">{{ form.imagen.label }}</label>
+                    {{ form.imagen }}
+                    {% if form.imagen.errors %}
+                        <div class="text-danger small mt-1">{{ form.imagen.errors }}</div>
+                    {% endif %}
+                    {% if maquinaria and maquinaria.imagen %}
+                        <div class="mt-2 p-2 bg-light rounded d-flex align-items-center gap-3 border">
+                            <img src="{{ maquinaria.imagen.url }}" alt="Vista previa" style="width: 50px; height: 50px; object-fit: cover;" class="rounded border">
+                            <span class="small text-muted">Fotografía cargada actualmente en el sistema.</span>
                         </div>
                     {% endif %}
+                </div>
 
-                    <!-- Renderizado de Campos -->
-                    <div class="form-container">
-                        {% for field in form %}
-                            <div class="mb-3">
-                                <label for="{{ field.id_for_label }}" class="form-label fw-semibold text-dark small text-uppercase letter-spacing-1">
-                                    {{ field.label }}
-                                    {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
-                                </label>
-                                
-                                {{ field }}
-
-                                {% if field.help_text %}
-                                    <div class="form-text text-muted small">{{ field.help_text }}</div>
-                                {% endif %}
-
-                                {% for error in field.errors %}
-                                    <div class="invalid-feedback d-block fw-medium">
-                                        <i class="bi bi-x-circle me-1"></i>{{ error }}
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% endfor %}
+                <!-- Interruptor de Vigencia -->
+                <div class="row g-3 mb-4 p-3 bg-light rounded-3 border">
+                    <div class="col-12">
+                        <div class="form-check form-switch">
+                            {{ form.vigente }}
+                            <label class="form-check-label fw-semibold text-dark" for="{{ form.vigente.id_for_label }}">
+                                {{ form.vigente.label }}
+                            </label>
+                        </div>
+                        <small class="text-muted d-block ps-4">Desmarca esta opción si el equipo se da de baja temporal o definitivamente del catálogo web.</small>
                     </div>
+                </div>
 
-                    <!-- Acciones del Formulario -->
-                    <div class="d-grid gap-2 mt-4 pt-3 border-top">
-                        <button type="submit" class="btn btn-warning btn-lg fw-bold text-dark rounded-3 shadow-sm hover-elevate">
-                            <i class="bi bi-check-circle-fill me-2"></i>Guardar Equipo
-                        </button>
-                        <a href="{% url 'catalogo:lista' %}" class="btn btn-outline-secondary rounded-3">
-                            <i class="bi bi-arrow-left
+                <!-- Botones de Acción -->
+                <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+                    <a href="{% url 'catalogo:gestion' %}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-warning fw-bold text-dark px-4 shadow-sm">
+                        <i class="bi bi-save me-1"></i> Guardar Equipo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos estéticos integrados para asegurar que los elementos form de Django luzcan limpios */
+    input[type="text"], input[type="number"], input[type="file"], select, textarea {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        appearance: none;
+        border-radius: 0.375rem;
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    input[type="file"] {
+        padding: 0.375rem 0.75rem;
+    }
+    input[type="checkbox"] {
+        width: 2.5em;
+        height: 1.25em;
+    }
+</style>
+{% endblock %}

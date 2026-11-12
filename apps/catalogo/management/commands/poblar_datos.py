@@ -1,9 +1,10 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from apps.core.models import TipoFaena, Maquinaria
+from apps.catalogo.models import TipoFaena, Maquinaria
+from apps.usuarios.models import Perfil
 
 class Command(BaseCommand):
-    help = 'Pobla la base de datos con tipos de faena, maquinaria de carga y usuarios de prueba.'
+    help = 'Pobla la base de datos con tipos de faena, maquinaria de carga, usuarios y perfiles.'
 
     def handle(self, *args, **kwargs):
         # Limpiar registros previos para evitar duplicados
@@ -26,10 +27,41 @@ class Command(BaseCommand):
         Maquinaria.objects.create(codigo="MQ-07", nombre="Excavadora Hidráulica 20T", tipo_faena=tf3, descripcion="Alto rendimiento para faenas mineras masivas.", tarifa_diaria=250000, fianza=800000, capacidad_carga="Balde 1.2 m3", estado="DISPONIBLE")
         Maquinaria.objects.create(codigo="MQ-08", nombre="Transpaleta Eléctrica", tipo_faena=tf2, descripcion="Traslado rápido de pallets a nivel de piso.", tarifa_diaria=25000, fianza=80000, capacidad_carga="2.0 Toneladas", estado="DISPONIBLE")
 
-        # 3. Crear usuarios de prueba (Admin y Estándar)
-        if not User.objects.filter(username="admin").exists():
-            User.objects.create_superuser("admin", "admin@maquinaria.cl", "admin123")
-        if not User.objects.filter(username="operador").exists():
-            User.objects.create_user("operador", "operador@maquinaria.cl", "user123")
+        # 3. Crear usuarios de prueba y sus perfiles obligatorios
+        admin_user, created = User.objects.get_or_create(
+            username="admin", 
+            defaults={"email": "admin@maquinaria.cl", "is_staff": True, "is_superuser": True}
+        )
+        if created:
+            admin_user.set_password("admin123")
+            admin_user.save()
 
-        self.stdout.write(self.style.SUCCESS("¡Base de datos poblada exitosamente con faenas, maquinaria y usuarios!"))
+        # Crear o actualizar perfil del admin
+        Perfil.objects.get_or_create(
+            user=admin_user, 
+            defaults={
+                "rut": "12.345.678-9", 
+                "telefono": "+56912345678", 
+                "rol_institucional": "Administrador"
+            }
+        )
+
+        operador_user, created = User.objects.get_or_create(
+            username="operador", 
+            defaults={"email": "operador@maquinaria.cl"}
+        )
+        if created:
+            operador_user.set_password("user123")
+            operador_user.save()
+
+        # Crear o actualizar perfil del operador
+        Perfil.objects.get_or_create(
+            user=operador_user, 
+            defaults={
+                "rut": "98.765.432-1", 
+                "telefono": "+56987654321", 
+                "rol_institucional": "Operador"
+            }
+        )
+        
+        self.stdout.write(self.style.SUCCESS("¡Base de datos poblada exitosamente con faenas, maquinaria, usuarios y perfiles!"))

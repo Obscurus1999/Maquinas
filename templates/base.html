@@ -43,13 +43,13 @@
 
                 <!-- Enlaces del Lado Derecho (Reservas y Autenticación) -->
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <!-- Enlace a la Canasta / Reservas con el contador -->
+                    <!-- Enlace a las reservas con el contador -->
                     <li class="nav-item me-3">
-                        <a class="nav-link d-flex align-items-center gap-1" href="{% url 'reservas:ver' %}">
-                            <i class="bi bi-journal-check fs-5"></i> Reservas
-                            {% if request.session.reservas %}
-                                <span class="badge rounded-pill bg-danger ms-1">
-                                    {{ request.session.reservas|length }}
+                        <a href="{% url 'reservas:ver' %}" class="btn btn-outline-warning position-relative text-decoration-none">
+                            <i class="bi bi-journal-check"></i> Reservas
+                            {% if cantidad_en_reservas > 0 %}
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                                    {{ cantidad_en_reservas }}
                                 </span>
                             {% endif %}
                         </a>

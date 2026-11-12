@@ -33,7 +33,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for key, item in carrito.items %}
+                            {% for key, item in reserva.items %}
                             <tr>
                                 <td class="ps-3 py-3">
                                     <strong class="text-dark">{{ item.nombre }}</strong><br>
@@ -41,7 +41,10 @@
                                 </td>
                                 <td class="py-3">${{ item.tarifa_diaria|floatformat:0 }}</td>
                                 <td class="py-3 text-center fw-semibold">{{ item.dias }}</td>
-                                <td class="pe-3 py-3 text-end fw-bold text-dark">${{ item.subtotal|floatformat:0 }}</td>
+                                <td class="pe-3 py-3 text-end fw-bold text-dark">
+                                    ${% widthratio item.tarifa_diaria 1 item.dias as subtotal_calculado %}
+                                    {{ subtotal_calculado|floatformat:0 }}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -77,7 +80,7 @@
                 <form method="POST">
                     {% csrf_token %}
                     <div class="d-grid gap-2 d-md-flex mt-4 pt-2 border-top">
-                        <a href="{% url 'ver_carrito' %}" class="btn btn-outline-secondary btn-lg flex-fill rounded-3">
+                        <a href="{% url 'reservas:ver' %}" class="btn btn-outline-secondary btn-lg flex-fill rounded-3">
                             <i class="bi bi-arrow-left me-1"></i> Volver a la Lista de Cotización
                         </a>
                         <button type="submit" class="btn btn-warning btn-lg flex-fill fw-bold text-dark rounded-3 shadow-sm hover-elevate">

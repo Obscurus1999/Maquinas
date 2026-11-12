@@ -137,6 +137,11 @@ def procesar_checkout(request):
                 subtotal_item=t * d,
             )
 
+            if maquinaria_obj:
+                maquinaria_obj.vigente = False             # Lo oculta del catálogo público
+                maquinaria_obj.estado = 'ARRENDADO' # cambia el estado
+                maquinaria_obj.save()
+            
         del request.session['reserva']
         request.session.modified = True
         messages.success(request, f'¡Solicitud de arriendo #{orden.id} generada con éxito!')
